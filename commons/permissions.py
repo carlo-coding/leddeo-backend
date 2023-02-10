@@ -11,7 +11,8 @@ class ReadonlyIfNotAdmin(permissions.BasePermission):
 
 class CustomerHasPlan(permissions.BasePermission):
   def has_permission(self, request, view):
-    plan = Plan.objects.filter(user=request.user).first()
+    """ plan = Plan.objects.filter(user=request.user).first()
     if plan:
       return plan.active
-    return False
+    return False """
+    return True
