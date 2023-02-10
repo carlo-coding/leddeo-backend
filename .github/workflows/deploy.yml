@@ -1,0 +1,42 @@
+name: Deploy to remote server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: 📂 Sync Production Config
+        uses: easingthemes/ssh-deploy@v4.0.5
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SERVER_KEY }}
+          REMOTE_HOST: ${{ secrets.VPS_SERVER_IP }}
+          REMOTE_USER: ${{ secrets.VPS_SERVER_USERNAME }}
+          TARGET: ./app/
+          SCRIPT_AFTER: |
+            cd app
+            chmod +x deploy.sh
+            echo ${{ secrets.VPS_SERVER_PASSWORD }} | sudo -S ./deploy.sh
+            sudo docker run -d -p8000:8000 --name production-container \
+            -e DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }} \
+            -e DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} \
+            -e CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }} \
+            -e CHECKOUT_SUCCESS_URL=${{ secrets.CHECKOUT_SUCCESS_URL }} \
+            -e CHECKOUT_CANCEL_URL=${{ secrets.CHECKOUT_CANCEL_URL }} \
+            -e STRIPE_PORTAL_RETURN_URL=${{ secrets.STRIPE_PORTAL_RETURN_URL }} \
+            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+            -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+            -e STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }} \
+            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            -e DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }} \
+            -e DJANGO_SUPERUSER_USERNAME=${{ secrets.DJANGO_SUPERUSER_USERNAME }} \
+            -e DJANGO_SUPERUSER_EMAIL=${{ secrets.DJANGO_SUPERUSER_EMAIL }} \
+            -e CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} \
+            production-image
