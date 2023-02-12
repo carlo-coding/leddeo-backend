@@ -10,12 +10,17 @@ def get_srt_from_video(
   output_audio="audio.mp3",
   model_type="tiny",
 ):
-    video_path = os.path.join(output_dir, output_audio)
-    my_clip = mp.VideoFileClip(uploaded_vid)
-    my_clip.audio.write_audiofile(video_path)
-    my_clip.close()
+    audio_path = os.path.join(output_dir, output_audio)
+    clip = mp.VideoFileClip(uploaded_vid)
+
+    clip.audio.write_audiofile(audio_path)
+
+    clip_duration = clip.audio.duration
+    clip.close()
+
+    clip_bytes = os.stat(audio_path).st_size
     model = whisper.load_model(model_type)
-    result  = model.transcribe(video_path)
+    result  = model.transcribe(audio_path)
     
     data = []
     for i in result['segments']:
@@ -25,4 +30,4 @@ def get_srt_from_video(
           "end": float(i['end']),
           "text": i['text']
         })
-    return data
+    return data, clip_duration, clip_bytes

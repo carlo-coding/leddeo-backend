@@ -11,8 +11,12 @@ from .utils.get_temp_folders import get_temp_folders
 from .utils.remove_folders import remove_folders
 from django.http import HttpResponse
 from history.models import History
+from .models import SubtitlesRecord, DownloadsRecord
+from .serializers import SubtitlesRecordSerializer, DownloadsRecordSerializer
 from commons.utils import user_from_request
+import string
 from uuid import uuid4
+from time import time
 import os
 
 class VideoUploadView(APIView):
@@ -20,6 +24,9 @@ class VideoUploadView(APIView):
   permission_classes=[IsAuthenticated, CustomerHasPlan]
 
   def post(self, request):
+    st = time()
+    model_type="tiny"
+    user = user_from_request(request)
     uploads_folder, outputs_folder = get_temp_folders()
 
     video_file = request.data["file"]
@@ -44,11 +51,14 @@ class VideoUploadView(APIView):
     with open(file_path, 'wb') as f:
       f.write(video_file.read())
 
-    data = get_srt_from_video(
+    data, clip_duration, clip_bytes = get_srt_from_video(
       uploaded_vid=file_path,
       output_dir=outputs_folder,
-      model_type="tiny"
+      model_type=model_type
     )
+
+    text_content = "".join([i["text"] for i in data])
+    number_of_words = sum([i.strip(string.punctuation).isalpha() for i in text_content.split()])
 
     if data == None:
       return Response(
@@ -64,6 +74,16 @@ class VideoUploadView(APIView):
 
     remove_folders(uploads_folder, outputs_folder)
 
+    et = time()
+    SubtitlesRecord.objects.create(
+      user=user,
+      audio_duration=clip_bytes,
+      audio_size=clip_duration,
+      process_duration=et - st,
+      whisper_model=model_type,
+      number_of_words=number_of_words
+    ).save()
+
     return Response(response, content_type="application/json")
 
 
@@ -73,7 +93,7 @@ class VideoCaptionView(APIView):
   permission_classes=[IsAuthenticated, CustomerHasPlan]
 
   def post(self, request):
-
+    st = time()
     user = user_from_request(request)
     uploads_folder, outputs_folder = get_temp_folders()
 
@@ -123,12 +143,13 @@ class VideoCaptionView(APIView):
     video_file_path = os.path.join(uploads_folder, video_filename)
     with open(video_file_path, 'wb') as f:
       f.write(video_file.read())
+    video_size = os.stat(video_file_path).st_size
 
     srt_file_path = os.path.join(uploads_folder, srt_filename)
     with open(srt_file_path, 'wb') as f:
       f.write(srt_file.read())
 
-    output_file_dir, output_file_name = apply_srt_to_video(
+    output_file_dir, output_file_name, video_duration, video_size_compressed = apply_srt_to_video(
       uploaded_vid=video_file_path,
       uploaded_srt=srt_file_path,
       output_dir=outputs_folder,
@@ -149,8 +170,6 @@ class VideoCaptionView(APIView):
     file = open(output_file_dir, "rb")
     response = HttpResponse(file.read(), content_type='video/mp4', )
     response['Content-Disposition'] = 'attachment; filename="%s"' % output_file_name
-    response["Access-Control-Allow-Headers"] = "Origin, X-Requested-With, Content-Type, Accept"
-    response["Access-Control-Allow-Credentials"] = "true"
     file.close()
 
     remove_folders(uploads_folder, outputs_folder)
@@ -161,5 +180,30 @@ class VideoCaptionView(APIView):
       description=f"applied subtitles to {original_name}"
     )
     history.save()
+    et = time()
+    DownloadsRecord.objects.create(
+      user=user,
+      video_duration=video_duration,
+      video_size=video_size,
+      video_size_compressed=video_size_compressed,
+      process_duration=et - st,
+    ).save()
+
 
     return response
+
+
+class SubtitlesRecordView(APIView):
+  permission_classes=[IsAuthenticated]
+
+  def get(self, request):
+    objects = SubtitlesRecord.objects.all()
+    data = SubtitlesRecordSerializer(objects, many=True).data
+    return Response(data)
+
+class DownloadsRecordView(APIView):
+
+  def get(self, request):
+    objects = DownloadsRecord.objects.all()
+    data = DownloadsRecordSerializer(objects, many=True).data
+    return Response(data)

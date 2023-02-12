@@ -23,7 +23,9 @@ def apply_srt_to_video(
     output_compressed_video_name = f"{uuid.uuid4()}.mp4"
     output_compressed_video_dir = os.path.join(output_dir,output_compressed_video_name)
     compress_video(uploaded_vid, output_compressed_video_dir)
+    video_size_compressed = os.stat(output_compressed_video_dir).st_size
     video_to_process = output_compressed_video_dir
+
 
     vidcap = cv2.VideoCapture(video_to_process)
     _,image = vidcap.read()
@@ -48,6 +50,7 @@ def apply_srt_to_video(
     )
     subtitles = SubtitlesClip(uploaded_srt, generator, "utf-8")
     video = VideoFileClip(video_to_process)
+    video_duration = video.duration
     final = CompositeVideoClip([video, subtitles.set_pos(pos)])
     final.write_videofile(
       output_video_dir, 
@@ -58,4 +61,4 @@ def apply_srt_to_video(
     )
     final.close()
 
-    return output_video_dir, output_video_name
+    return output_video_dir, output_video_name, video_duration, video_size_compressed
