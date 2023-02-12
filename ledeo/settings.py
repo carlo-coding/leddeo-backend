@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     "account",
     "history",
     "plans",
-    "faq"
+    "faq",
+    "fonts"
 ]
 
 MIDDLEWARE = [

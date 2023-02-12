@@ -12,7 +12,8 @@ urlpatterns = [
     path("plans/", include("plans.urls")),
     path("support/", include("faq.urls")),
     path("user/", include("history.urls")),
-    path("health/", include("health.urls"))
+    path("health/", include("health.urls")),
+    path("fonts/", include("fonts.urls"))
 ]
 urlpatterns = [
   path('admin/', admin.site.urls),
