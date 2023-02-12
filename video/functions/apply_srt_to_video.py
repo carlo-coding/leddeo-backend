@@ -41,7 +41,7 @@ def apply_srt_to_video(
     generator = lambda txt: TextClip(
       txt, 
       font=font, 
-      fontsize=fontsize/0.43, 
+      fontsize=fontsize/0.28, 
       color=color,
       bg_color=bgcolor,
       size = (width, None), 
