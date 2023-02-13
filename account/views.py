@@ -14,12 +14,24 @@ from google.auth.transport import requests
 from rest_framework.permissions import IsAuthenticated
 from ledeo.settings import SECRET_KEY as secretkey
 from commons.utils import user_from_request
+from acceptance.functions import save_acceptance
 import jwt
+
+
 class RegisterView(APIView):
   def post(self, request, *args, **kwargs):
-    serializer = RegisterSerializer(data=request.data)
+    acceptance_id = request.data.get("acceptance_id", "")
+    serializer = RegisterSerializer(data={
+      "username": request.data.get("username", ""),
+      "password": request.data.get("password", ""),
+      "email": request.data.get("email", ""),
+    })
     serializer.is_valid(raise_exception=True)
-    serializer.save()
+    user = serializer.save()
+    save_acceptance(
+      user=user,
+      acceptance_id=acceptance_id
+    )
     return Response({
       "message": "User created successfully"
     })
@@ -27,10 +39,7 @@ class RegisterView(APIView):
 class GetUserInfoView(APIView):
   permission_classes=[IsAuthenticated]
   def get(self, request):
-    token = request.headers.get('Authorization').split(" ")[1]
-    payload = jwt.decode(jwt=token, key=secretkey, algorithms=['HS256']) 
-    user_id = payload.get("user_id")
-    user = User.objects.filter(id=user_id).first()
+    user = user_from_request(request)
     if not user:
       return Response({ "message": "no user info available" }, status=400)
     user_data = UserSerializer(user).data
@@ -57,7 +66,12 @@ class GoogleView(APIView):
             "password": BaseUserManager().make_random_password()+"ABCabc123@#$&"
           })
           serializer.is_valid(raise_exception=True)
-          serializer.save()
+          user = serializer.save()
+          acceptance_id = token_request.data.get("acceptance_id", "")
+          save_acceptance(
+            user=user,
+            acceptance_id=acceptance_id
+          )
         
         user = User.objects.get(email=id_info['email'])
         token = RefreshToken.for_user(user)

@@ -11,7 +11,6 @@ stripe.api_key = stripe_key
 class RegisterSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
-
     fields=("id", "email", "username", "password")
     extra_kwargs={
       "password": {

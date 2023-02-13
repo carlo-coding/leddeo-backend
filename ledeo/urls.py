@@ -13,7 +13,8 @@ urlpatterns = [
     path("support/", include("faq.urls")),
     path("user/", include("history.urls")),
     path("health/", include("health.urls")),
-    path("fonts/", include("fonts.urls"))
+    path("fonts/", include("fonts.urls")),
+    path("acceptance/", include("acceptance.urls"))
 ]
 urlpatterns = [
   path('admin/', admin.site.urls),
