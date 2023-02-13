@@ -6,6 +6,7 @@ class Acceptance(models.Model):
   title = models.TextField()
   template = models.TextField()
   created_at = models.DateTimeField(auto_now_add=True)
+  language = models.CharField(max_length=5, default="es")
 
 class UserAcceptance(models.Model):
   acceptance = models.ForeignKey(Acceptance, on_delete=models.SET_NULL, null=True)
