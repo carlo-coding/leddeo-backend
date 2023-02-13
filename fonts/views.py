@@ -4,7 +4,7 @@ from django.http import HttpResponse
 import os
 
 #C:\Windows\Fonts
-LOCAL_FONT_DIR = "C:\Windows\Fonts"
+LOCAL_FONT_DIR = "/usr/share/fonts"
 
 class ListFontsView(APIView):
   def get(self, request):
