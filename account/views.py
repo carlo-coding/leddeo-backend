@@ -15,7 +15,6 @@ from rest_framework.permissions import IsAuthenticated
 from ledeo.settings import SECRET_KEY as secretkey
 from commons.utils import user_from_request
 from acceptance.functions import save_acceptance
-import jwt
 
 
 class RegisterView(APIView):
