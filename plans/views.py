@@ -5,13 +5,11 @@ from .models import Plan
 from account.models import UserInfo, User
 import stripe
 from ledeo.settings import (
-  stripe_key, 
-  checkout_cancel_url, 
-  checkout_success_url, 
-  stripe_portal_return_url,
+  CHECKOUT_CANCEL_URL,
+  CHECKOUT_SUCCESS_URL,
+  STRIPE_PORTAL_RETURN_URL
 )
 
-stripe.api_key = stripe_key
 class CreateCheckoutSessionView(APIView):
 
   def post(self, request):
@@ -29,8 +27,8 @@ class CreateCheckoutSessionView(APIView):
                 },
             ],
             mode='subscription',
-            success_url=checkout_success_url,
-            cancel_url=checkout_cancel_url,
+            success_url=CHECKOUT_SUCCESS_URL,
+            cancel_url=CHECKOUT_CANCEL_URL,
             customer=customer_id,
         )
     return Response({
@@ -44,7 +42,7 @@ class CreatePortalSessionView(APIView):
       checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
       portalSession = stripe.billing_portal.Session.create(
           customer=checkout_session.customer,
-          return_url=stripe_portal_return_url
+          return_url=STRIPE_PORTAL_RETURN_URL
       )
       return Response({
         "url": portalSession.url
@@ -55,7 +53,7 @@ class CreatePortalSessionView(APIView):
       return Response({"message": "session_id or customer_id were not provided"})
     portalSession = stripe.billing_portal.Session.create(
       customer=customer_id,
-      return_url=stripe_portal_return_url
+      return_url=STRIPE_PORTAL_RETURN_URL
     )
     return Response({
       "url": portalSession.url

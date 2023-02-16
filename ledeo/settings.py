@@ -10,12 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
-from urllib.parse import urlparse
 from dotenv import load_dotenv
 from pathlib import Path
 import datetime
 import dj_database_url
+import stripe
 load_dotenv()
+
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -155,13 +157,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SIMPLE_JWT = {
-  "ACCESS_TOKEN_LIFETIME": datetime.timedelta(hours=24 * 7),
-  "REFRESH_TOKEN_LIFETIME": datetime.timedelta(hours=4)
+  "ACCESS_TOKEN_LIFETIME": datetime.timedelta(hours=24),
+  "REFRESH_TOKEN_LIFETIME": datetime.timedelta(hours=24 * 7)
 }
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
 
-stripe_key = os.getenv("STRIPE_SECRET_KEY", "")
-checkout_success_url=os.getenv("CHECKOUT_SUCCESS_URL", "")
-checkout_cancel_url=os.getenv("CHECKOUT_CANCEL_URL", "")
-stripe_portal_return_url=os.getenv("STRIPE_PORTAL_RETURN_URL", "")
+CHECKOUT_SUCCESS_URL=os.getenv("CHECKOUT_SUCCESS_URL", "")
+CHECKOUT_CANCEL_URL=os.getenv("CHECKOUT_CANCEL_URL", "")
+STRIPE_PORTAL_RETURN_URL=os.getenv("STRIPE_PORTAL_RETURN_URL", "")
+
+LOCAL_FONT_DIR=os.getenv("LOCAL_FONT_DIR", "/usr/share/fonts")

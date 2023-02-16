@@ -1,10 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
+from ledeo.settings import LOCAL_FONT_DIR
 import os
-
-#C:\Windows\Fonts
-LOCAL_FONT_DIR = "/usr/share/fonts"
 
 class ListFontsView(APIView):
   def get(self, request):

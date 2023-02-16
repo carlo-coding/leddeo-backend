@@ -3,11 +3,9 @@ from django.contrib.auth.models import User
 from .models import UserInfo
 import re
 import stripe
-from ledeo.settings import stripe_key
 from plans.serializers import PlanSerializer
 from plans.models import Plan
 
-stripe.api_key = stripe_key
 class RegisterSerializer(serializers.ModelSerializer):
   class Meta:
     model = User

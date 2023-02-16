@@ -24,8 +24,8 @@ class VideoUploadView(APIView):
   permission_classes=[IsAuthenticated, CustomerHasPlan]
 
   def post(self, request):
-    st = time()
-    model_type="tiny"
+    st = time() 
+    model_type="small"
     user = user_from_request(request)
     uploads_folder, outputs_folder = get_temp_folders()
 
