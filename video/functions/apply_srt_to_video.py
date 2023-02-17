@@ -4,7 +4,8 @@ from moviepy.editor import *
 import os
 import cv2
 import uuid
-from .SubtitleClips import SubtitlesClip
+from .cmoviepy.SubtitleClips import SubtitlesClip
+from .cmoviepy.CompositeVideoClip import CompositeVideoClip
 from .compress import compress_video
 
 def apply_srt_to_video( 
@@ -37,15 +38,13 @@ def apply_srt_to_video(
       "right": "East",
       "left": "West"
     }
-
     generator = lambda txt: TextClip(
       txt, 
       font=font, 
-      fontsize=fontsize/0.28, 
+      fontsize=fontsize, 
       color=color,
       bg_color=bgcolor,
-      size = (width, None), 
-      method='caption',
+      method='label',
       align=alignments[pos[0]]
     )
     subtitles = SubtitlesClip(uploaded_srt, generator, "utf-8")

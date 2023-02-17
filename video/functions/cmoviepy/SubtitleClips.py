@@ -1,6 +1,7 @@
 import re
 import numpy as np
-from moviepy.video.VideoClip import TextClip, VideoClip
+from moviepy.video.VideoClip import TextClip
+from .VideoClip import VideoClip
 
 class SubtitlesClip(VideoClip):
     """A Clip that serves as "subtitle track" in videos.
