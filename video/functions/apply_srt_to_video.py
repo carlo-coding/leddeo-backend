@@ -7,6 +7,7 @@ import uuid
 from .cmoviepy.SubtitleClips import SubtitlesClip
 from .cmoviepy.CompositeVideoClip import CompositeVideoClip
 from .compress import compress_video
+from .get_fontsize import get_fontsize
 
 def apply_srt_to_video( 
   uploaded_vid,
@@ -32,6 +33,11 @@ def apply_srt_to_video(
     _,image = vidcap.read()
     height = len(image)
     width = len(image[0])
+
+    fontsize = get_fontsize(width, height, fontsize)
+    print("FONTSIZE: ", fontsize)
+    print("WIDTH: ", width)
+    print("HEIGHT: ", height)
 
     alignments = {
       "center": "center",

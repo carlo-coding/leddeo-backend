@@ -14,7 +14,8 @@ urlpatterns = [
     path("user/", include("history.urls")),
     path("health/", include("health.urls")),
     path("fonts/", include("fonts.urls")),
-    path("acceptance/", include("acceptance.urls"))
+    path("acceptance/", include("acceptance.urls")),
+    path("predict/", include("duration.urls"))
 ]
 urlpatterns = [
   path('admin/', admin.site.urls),

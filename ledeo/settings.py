@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     "history",
     "plans",
     "faq",
-    "fonts"
+    "fonts",
+    "duration"
 ]
 
 MIDDLEWARE = [
