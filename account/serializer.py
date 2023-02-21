@@ -5,7 +5,7 @@ import re
 import stripe
 from plans.serializers import PlanSerializer
 from plans.models import Plan
-
+from django.contrib.auth.base_user import BaseUserManager
 class RegisterSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
@@ -36,8 +36,13 @@ class RegisterSerializer(serializers.ModelSerializer):
       password=validated_data["password"],
       email=validated_data["email"],
     )
+    verify_string = BaseUserManager().make_random_password()
     customer = stripe.Customer.create(email=validated_data["email"])
-    userInfo = UserInfo.objects.create(user=user, customer_id=customer.id)
+    userInfo = UserInfo.objects.create(
+      user=user, 
+      customer_id=customer.id, 
+      verify_string=verify_string,
+    )
     userInfo.save()
     return user
   
@@ -45,7 +50,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserInfoSerializer(serializers.ModelSerializer):
   class Meta:
     model = UserInfo
-    fields = ("user_id", "customer_id")
+    fields = ("user_id", "customer_id", "email_verified")
 
 class UserSerializer(serializers.ModelSerializer):
   plans = serializers.SerializerMethodField(read_only=True)

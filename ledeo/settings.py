@@ -74,6 +74,7 @@ CSRF_TRUSTED_ORIGINS=os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
 
 ROOT_URLCONF = 'ledeo.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -158,7 +159,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SIMPLE_JWT = {
-  "ACCESS_TOKEN_LIFETIME": datetime.timedelta(hours=24),
+  "ACCESS_TOKEN_LIFETIME": datetime.timedelta(hours=24 * 7),
   "REFRESH_TOKEN_LIFETIME": datetime.timedelta(hours=24 * 7)
 }
 
@@ -169,3 +170,13 @@ CHECKOUT_CANCEL_URL=os.getenv("CHECKOUT_CANCEL_URL", "")
 STRIPE_PORTAL_RETURN_URL=os.getenv("STRIPE_PORTAL_RETURN_URL", "")
 
 LOCAL_FONT_DIR=os.getenv("LOCAL_FONT_DIR", "/usr/share/fonts")
+
+EMAIL_HOST_USER=os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD=os.getenv("EMAIL_HOST_PASSWORD", "")
+
+EMAIL_HOST=os.getenv("EMAIL_HOST", "smtp.hostinger.com")
+EMAIL_PORT=os.getenv("EMAIL_PORT", 587)
+EMAIL_USE_TLS = True
+
+EMAIL_VERIFY_REDIRECT_URL=os.getenv("EMAIL_VERIFY_REDIRECT_URL", "")
+EMAIL_VERIFY_URL=os.getenv("EMAIL_VERIFY_URL", "")

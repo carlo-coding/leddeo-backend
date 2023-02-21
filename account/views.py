@@ -2,21 +2,23 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializer import RegisterSerializer, UserSerializer
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http.response import HttpResponseRedirect
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from ledeo import settings
+from ledeo.settings import (
+  EMAIL_VERIFY_URL as verify_url, 
+  EMAIL_VERIFY_REDIRECT_URL as redirect_url
+)
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from rest_framework.permissions import IsAuthenticated
-from ledeo.settings import SECRET_KEY as secretkey
-from commons.utils import user_from_request
+from commons.utils import user_from_request, send_mail
 from acceptance.functions import save_acceptance
-
-
+from .models import UserInfo
 class RegisterView(APIView):
   def post(self, request, *args, **kwargs):
     acceptance_id = request.data.get("acceptance_id", "")
@@ -27,13 +29,37 @@ class RegisterView(APIView):
     })
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
+    verify_string = UserInfo.objects.filter(user=user).first().verify_string
     save_acceptance(
       user=user,
       acceptance_id=acceptance_id
     )
+
+    send_mail(
+      subject="Verificación de cuenta", 
+      to=user.email, 
+      template="verify_email.html",
+      template_context={
+        "username": user.username, 
+        "url": f"{verify_url}/{verify_string}"},
+    )
+
     return Response({
       "message": "User created successfully"
     })
+  
+class VerifyEmailView(APIView):
+  def get(self, request, *args, **kwargs):
+    code = kwargs.get("code")
+    if not code:
+      return Response({ "err": "Invalid code" }, status=400)
+    userInfo = UserInfo.objects.filter(verify_string=code).first()
+    if not userInfo:
+      return Response({ "err": "User not found" }, status=404)
+    userInfo.email_verified = True
+    userInfo.verify_string = ""
+    userInfo.save()
+    return HttpResponseRedirect(redirect_to=redirect_url)
 
 class GetUserInfoView(APIView):
   permission_classes=[IsAuthenticated]
@@ -71,6 +97,9 @@ class GoogleView(APIView):
             user=user,
             acceptance_id=acceptance_id
           )
+          userInfo = UserInfo.objects.filter(user=user).first()
+          userInfo.email_verified = True
+          userInfo.save()
         
         user = User.objects.get(email=id_info['email'])
         token = RefreshToken.for_user(user)

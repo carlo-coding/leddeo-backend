@@ -2,6 +2,7 @@
 LOCAL_FONT_DIR="/usr/share/fonts"
 # Define la lista de fuentes deseadas
 DESIRED_FONTS=(
+  "Anton"
   "Open Sans"
   "Roboto"
   "Lato"
@@ -10,6 +11,7 @@ DESIRED_FONTS=(
   "Montserrat"
   "Raleway"
   "Poppins"
+  "Oxygen"
   "Nunito"
   "Bakbak One"
   "Comfortaa"
@@ -25,6 +27,21 @@ DESIRED_FONTS=(
   "Zeyada"
   "Babylonica"
   "Mukta"
+  "Phudu"
+  "Noto Sans"
+  "Rubik"
+  "Quicksand"
+  "Barlow"
+  "Dosis"
+  "Bitter"
+  "Cabin"
+  "Prompt"
+  "Abel"
+  "Exo 2"
+  "Varela Round"
+  "Asap"
+  "Assistant"
+  "Abril Fatface"
 )
 # Recorre la lista de fuentes deseadas
 for font in "${DESIRED_FONTS[@]}"; do

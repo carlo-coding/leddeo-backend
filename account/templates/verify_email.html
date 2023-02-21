@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Verificación de usuario</title>
+    <style>
+      /* Estilos para el cuerpo del correo */
+      body {
+        background-color: #f6f6f6;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #444444;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Estilos para el encabezado */
+      header {
+        background-color: #ffffff;
+        padding: 20px;
+        border-bottom: 1px solid #cccccc;
+      }
+      .header-div {
+        display: flex;
+        align-items: center;
+      }
+
+      /* Estilos para el logo */
+      .logo {
+        width: 50px;
+        height: 50px;
+        margin-right: 20px;
+      }
+
+      /* Estilos para el contenido */
+      .content {
+        padding: 30px;
+        text-align: center;
+      }
+
+      /* Estilos para los botones */
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-top: 20px;
+      }
+
+      /* Estilos para el pie de página */
+      footer {
+        background-color: #eeeeee;
+        padding: 20px;
+        border-top: 1px solid #cccccc;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="header-div">
+        <img class="logo" src="https://leddeo.com/LE.ico" alt="Logo" />
+        <h1>¡Bienvenid@! {{ username }}</h1>
+      </div>
+      <p>Por favor, verifica tu cuenta para empezar a usar nuestro servicio.</p>
+    </header>
+
+    <div class="content">
+      <h2>Verificación de cuenta</h2>
+      <p>Para verificar tu cuenta, por favor haz clic en el siguiente botón:</p>
+      <a class="button" href="{{ url }}">Verificar cuenta</a>
+    </div>
+
+    <footer>
+      <p>
+        Este correo electrónico fue generado automáticamente. No dudes en
+        contactarnos por este medio o cualquier otro disponible si tienes dudas
+        o problemas.
+      </p>
+    </footer>
+  </body>
+</html>
