@@ -6,7 +6,7 @@ class PlanSerializer(serializers.ModelSerializer):
     model = Plan
     fields = (
       "stripe_subscription_id", 
-      "active", 
+      "status", 
       "billing_cycle_anchor",
       "start_date",
       "trial_start",
@@ -16,5 +16,9 @@ class PlanSerializer(serializers.ModelSerializer):
       "cancel_at",
       "canceled_at",
       "ended_at",
-      "name"
+      "name",
+      "lookup_key",
+      "interval",
+      "unit_amount",
+      "currency"
     )

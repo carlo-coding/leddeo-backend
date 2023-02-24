@@ -23,7 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     return email
   
   def validate_password(self, password):
-    pattern = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&.])[A-Za-z\d@$!%*#?&.]{8,}"
+    pattern = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&._-])[A-Za-z\d@$!%*#?&.]{8,}"
     validated = re.search(pattern, password)
     if not validated:
       raise serializers.ValidationError("Password not valid")
@@ -50,7 +50,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserInfoSerializer(serializers.ModelSerializer):
   class Meta:
     model = UserInfo
-    fields = ("user_id", "customer_id", "email_verified")
+    fields = ("user_id", "customer_id", "email_verified", "balance")
 
 class UserSerializer(serializers.ModelSerializer):
   plans = serializers.SerializerMethodField(read_only=True)

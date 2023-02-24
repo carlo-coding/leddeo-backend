@@ -4,8 +4,14 @@ import jwt
 import datetime
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
-from django.template import Context
 from ledeo.settings import EMAIL_HOST_USER as emailuser
+
+def is_valid_plan(plan):
+    if plan.status == "active" or plan.status == "trialing":
+        return True
+    current_period_end = datetime.datetime.strptime(plan["current_period_end"], '%Y-%m-%d %H:%M:%S')
+    total_seconds = (current_period_end - datetime.datetime.now()).total_seconds()
+    return total_seconds >= 0
 
 def utc_to_date_string(utc_timestamp):
     if utc_timestamp is None:
@@ -25,6 +31,11 @@ def user_from_request(request):
   payload = jwt.decode(jwt=token, key=secretkey, algorithms=['HS256']) 
   user_id = payload.get("user_id")
   return User.objects.filter(id=user_id).first()
+
+def userid_from_request(request):
+    token = request.headers.get('Authorization').split(" ")[1]
+    payload = jwt.decode(jwt=token, key=secretkey, algorithms=['HS256']) 
+    return payload.get("user_id")
 
 
 def send_mail(subject, to, template, body="",template_context={}):

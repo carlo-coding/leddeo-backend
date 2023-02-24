@@ -1,5 +1,6 @@
 from rest_framework import permissions
 from plans.models import Plan
+from commons.utils import is_valid_plan
 
 class ReadonlyIfNotAdmin(permissions.BasePermission):
   def has_permission(self, request, view):
@@ -11,8 +12,7 @@ class ReadonlyIfNotAdmin(permissions.BasePermission):
 
 class CustomerHasPlan(permissions.BasePermission):
   def has_permission(self, request, view):
-    """ plan = Plan.objects.filter(user=request.user).first()
+    plan = Plan.objects.filter(user=request.user).first()
     if plan:
-      return plan.active
-    return False """
-    return True
+      return is_valid_plan(plan)
+    return False
