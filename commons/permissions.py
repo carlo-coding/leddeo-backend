@@ -12,7 +12,9 @@ class ReadonlyIfNotAdmin(permissions.BasePermission):
 
 class CustomerHasPlan(permissions.BasePermission):
   def has_permission(self, request, view):
-    plan = Plan.objects.filter(user=request.user).first()
-    if plan:
-      return is_valid_plan(plan)
+    for plan in Plan.objects.filter(user=request.user):
+      if is_valid_plan(plan):
+        return True
+    if request.user.is_staff or request.user.is_superuser:
+      return True
     return False
