@@ -57,7 +57,7 @@ class UserSerializer(serializers.ModelSerializer):
   info = serializers.SerializerMethodField(read_only=True)
   class Meta:
     model = User
-    fields = ("id", "username", "email", "plans", "info")
+    fields = ("id", "username", "email", "plans", "info", "is_staff", "is_superuser")
   
   def get_plans(self, obj):
     plans = Plan.objects.filter(user=obj)
