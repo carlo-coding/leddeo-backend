@@ -49,7 +49,7 @@ class RegisterView(APIView):
           "url": f"{verify_url}/{verify_string}"},
       )
     except smtplib.SMTPRecipientsRefused:
-      logging.error(f"SMTPRecipientsRefused: could not send email to {user.email}")
+      logger.error(f"SMTPRecipientsRefused: could not send email to {user.email}")
 
     return Response({
       "message": "User created successfully"

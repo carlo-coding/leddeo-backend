@@ -37,7 +37,10 @@ class RegisterSerializer(serializers.ModelSerializer):
       email=validated_data["email"],
     )
     verify_string = BaseUserManager().make_random_password()
-    customer = stripe.Customer.create(email=validated_data["email"])
+    customer = stripe.Customer.create(
+      email=validated_data["email"],
+      name=validated_data["username"]
+    )
     userInfo = UserInfo.objects.create(
       user=user, 
       customer_id=customer.id, 
