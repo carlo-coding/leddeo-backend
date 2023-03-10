@@ -19,8 +19,12 @@ from rest_framework.permissions import IsAuthenticated
 from commons.utils import user_from_request, send_mail
 from acceptance.functions import save_acceptance
 from .models import UserInfo
+import smtplib
+import logging
 class RegisterView(APIView):
   def post(self, request, *args, **kwargs):
+    logger = logging.getLogger(__name__)
+
     acceptance_id = request.data.get("acceptance_id", "")
     serializer = RegisterSerializer(data={
       "username": request.data.get("username", ""),
@@ -35,14 +39,17 @@ class RegisterView(APIView):
       acceptance_id=acceptance_id
     )
 
-    send_mail(
-      subject="Verificación de cuenta", 
-      to=user.email, 
-      template="verify_email.html",
-      template_context={
-        "username": user.username, 
-        "url": f"{verify_url}/{verify_string}"},
-    )
+    try:
+      send_mail(
+        subject="Verificación de cuenta", 
+        to=user.email, 
+        template="verify_email.html",
+        template_context={
+          "username": user.username, 
+          "url": f"{verify_url}/{verify_string}"},
+      )
+    except smtplib.SMTPRecipientsRefused:
+      logging.error(f"SMTPRecipientsRefused: could not send email to {user.email}")
 
     return Response({
       "message": "User created successfully"
