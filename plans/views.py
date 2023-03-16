@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from commons.utils import utc_to_date_string, is_valid_plan
 from .models import Plan
 from account.models import UserInfo, User
-import stripe
+import stripe, logging
 from ledeo.settings import (
   CHECKOUT_CANCEL_URL,
   CHECKOUT_SUCCESS_URL,
@@ -67,6 +67,7 @@ class CreateCheckoutSessionView(APIView):
 class HandleSubscription(APIView):
   permission_classes=[IsAuthenticated]
   def delete(self, request):
+    logger = logging.getLogger(__name__)
     subscription_id = request.data.get("subscription_id")
     user_id = userid_from_request(request)
     plan = Plan.objects.filter(
@@ -75,12 +76,16 @@ class HandleSubscription(APIView):
     ).first()
     if not plan:
       return Response({ "error": "Subscription not found" }, status=404)
-    result = stripe.Subscription.modify(
-      plan.stripe_subscription_id,
-      cancel_at_period_end=True,
-      proration_behavior='always_invoice'
-    )
-    return Response(result)
+    try:
+      result = stripe.Subscription.modify(
+        plan.stripe_subscription_id,
+        cancel_at_period_end=True,
+        proration_behavior='always_invoice'
+      )
+      return Response(result)
+    except stripe.error.InvalidRequestError as e:
+      logger.error(f"InvalidRequestError {e}")
+    return Response({ "err": "Cannot update plan in stripe" }, status=400)
 
   def patch(self, request):
     subscription_id = request.data.get("subscription_id")
